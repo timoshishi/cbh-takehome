@@ -1,5 +1,5 @@
 const { deterministicPartitionKey } = require('./dpk');
-const crypto = require('crypto');
+
 describe('deterministicPartitionKey', () => {
   it("Returns the literal '0' when given no input", () => {
     const trivialKey = deterministicPartitionKey();
@@ -43,14 +43,34 @@ describe('deterministicPartitionKey', () => {
       partitionKey: '123',
     };
     const trivialKey = deterministicPartitionKey(event);
-    console.log(trivialKey);
     expect(trivialKey).toBe('123');
   });
 
   it('Returns a hash for an object passed in without a property called "partitionKey"', () => {
     const event = {};
     const trivialKey = deterministicPartitionKey(event);
-    console.log(trivialKey);
+    expect(trivialKey).toMatch(/^[0-9a-fA-F]+$/);
+  });
+
+  it('Returns a hashed object if an empty object is passed in', () => {
+    const event = {};
+    const trivialKey = deterministicPartitionKey(event);
+    expect(trivialKey).toMatch(/^[0-9a-fA-F]+$/);
+  });
+
+  it('Returns a key of less than the MAX if the event.partitionKey length is greater than 256 characters', () => {
+    const event = {
+      partitionKey: 'a'.repeat(257),
+    };
+    const trivialKey = deterministicPartitionKey(event);
+    expect(trivialKey.length).toBeLessThanOrEqual(256);
+  });
+
+  it('returns a hash if the partition key is not a string', () => {
+    const event = {
+      partitionKey: [],
+    };
+    const trivialKey = deterministicPartitionKey(event);
     expect(trivialKey).toMatch(/^[0-9a-fA-F]+$/);
   });
 });
