@@ -25,3 +25,97 @@ and the intelligibility of your language. You don't need to be a native English 
 work.
 
 ## Your Breakdown Here
+
+---
+
+### Facility Assigned Agents Back End
+
+1. Add new table `FacilityAgents`
+
+Contains our internal db ids of the facilities and the agents as well as the new facility generated id for the agent.
+
+Fields:
+
+```sql
+pk id: UUID
+fk facility: UUID
+fk agent: UUID
+```
+
+Estimate:
+
+- Implementation: 2 hours
+- Testing: 2 hours
+
+2. Add PUT `/agents` endpoint
+
+BODY:
+
+```JSON
+{
+"facilityId": {FACILITY_ID},
+"agentId": {AGENT_ID},
+"facilityAgentId": {FACILITY_AGENT_ID}
+}
+```
+
+- The endpoint will insert this information into the new table `FacilityAgents`
+
+Estimate:
+
+- Implementation: 2 hours
+- Testing: 3 hours
+
+---
+
+### Assign Agent Front end
+
+1. Add functionality for a facility to assign an agent a facility generated id
+
+- Create new input in the front end with the function `assignAgentId`
+  - Function uses the current user's facilityId contained in their user profile. Function takes in parameters of
+    `agentId` and `facilityAgentId` which correspond to our internal DB id and the facility-provided id for the agent.
+  - Function calls PUT endpoint `/facility-agent`
+
+BODY
+
+```json
+{
+"facilityId": {FACILITY_ID},
+"agentId": {AGENT_ID},
+"facilityAgentId": {FACILITY_AGENT_ID}
+}
+```
+
+Estimate:
+
+- Implementation 2 hours
+- Testing 2 hours
+
+---
+
+### Generate Report Front End
+
+- Add an input that takes in the facility's provided agent ID to generate a report.
+- Add an optional parameter `facilityAgentId` to the `generateReport` function.
+- The `generateReport` function will use the `facilityAgentId` if it is provided to call the current
+  `reports/{FACILITY_ID}` endpoint.
+
+Estimate:
+
+- Implementation 2 hours
+- Testing 2 hours
+
+---
+
+### Generate Report Back End
+
+1. Add a new, optional query parameter of `facilityAgentId` to our GET `/reports/{FACILITY_ID}` endpoint.
+
+2. Add a function in the endpoint to query the Shifts table for shifts worked by the specified agent if it is present in
+   the query.
+
+Estimate:
+
+- Implementation: 2 hours
+- Testing: 3 hours
