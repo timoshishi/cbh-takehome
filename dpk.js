@@ -1,6 +1,7 @@
 const crypto = require('crypto');
 
 /**
+ * @name deterministicPartitionKey
  * @describe Returns a deterministic partition key for a given input string or object
  * @param {Object|string} [event] - The string to be hashed
  * @param {string} [event.partitionKey] - The string to be hashed
